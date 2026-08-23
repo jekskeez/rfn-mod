@@ -1,0 +1,67 @@
+package utils
+{
+   import flash.geom.Point;
+   
+   public class §_-L14§
+   {
+      
+      private var target:Object;
+      
+      private var offset:Number;
+      
+      private var point:Point;
+      
+      private var §_-5R§:Number;
+      
+      public function §_-L14§(param1:Object, param2:Point = null)
+      {
+         super();
+         this.set(param1,param2);
+      }
+      
+      public function set(param1:Object, param2:Point = null) : void
+      {
+         this.target = param1;
+         this.§_-w1§(param2);
+      }
+      
+      public function §_-w1§(param1:Point = null) : void
+      {
+         if(param1 == null)
+         {
+            this.point = new Point(this.target.x,this.target.y);
+         }
+         else
+         {
+            this.point = param1;
+         }
+         var _loc2_:Number = this.point.x - this.target.x;
+         var _loc3_:Number = this.point.y - this.target.y;
+         var _loc4_:Number = Math.atan2(_loc3_,_loc2_) * Game.R2D;
+         this.§_-5R§ = Math.sqrt(_loc2_ * _loc2_ + _loc3_ * _loc3_);
+         this.offset = 180 - _loc4_ + this.target.rotation;
+      }
+      
+      public function set rotation(param1:Number) : void
+      {
+         var _loc2_:Number = (param1 - this.offset) * Game.D2R;
+         this.target.x = this.point.x + Math.cos(_loc2_) * this.§_-5R§;
+         this.target.y = this.point.y + Math.sin(_loc2_) * this.§_-5R§;
+         this.target.rotation = param1;
+      }
+      
+      public function get rotation() : Number
+      {
+         return this.target.rotation;
+      }
+      
+      public function §_-c2u§(param1:Number) : void
+      {
+         var _loc2_:Number = (this.target.rotation + param1 - this.offset) * Game.D2R;
+         this.target.x = this.point.x + Math.cos(_loc2_) * this.§_-5R§;
+         this.target.y = this.point.y + Math.sin(_loc2_) * this.§_-5R§;
+         this.target.rotation += param1;
+      }
+   }
+}
+

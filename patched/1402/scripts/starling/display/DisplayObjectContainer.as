@@ -1,0 +1,536 @@
+package starling.display
+{
+   import §_-625§.§_-F1v§;
+   import §_-f1T§.Event;
+   import flash.geom.Matrix;
+   import flash.geom.Point;
+   import flash.geom.Rectangle;
+   import flash.system.Capabilities;
+   import flash.utils.getQualifiedClassName;
+   import starling.core.§_-wz§;
+   import starling.core.starling_internal;
+   import starling.filters.FragmentFilter;
+   import starling.utils.§_-r1p§;
+   
+   use namespace starling_internal;
+   
+   public class DisplayObjectContainer extends DisplayObject
+   {
+      
+      private static var §_-7w§:Matrix = new Matrix();
+      
+      private static var §_-O§:Point = new Point();
+      
+      private static var §_-ol§:Vector.<DisplayObject> = new Vector.<DisplayObject>(0);
+      
+      private static var §_-828§:Vector.<DisplayObject> = new Vector.<DisplayObject>(0);
+      
+      private var §_-729§:Vector.<DisplayObject>;
+      
+      private var §_-69§:Boolean;
+      
+      public function DisplayObjectContainer()
+      {
+         super();
+         if(Capabilities.isDebugger && getQualifiedClassName(this) == "starling.display::DisplayObjectContainer")
+         {
+            throw new §_-F1v§();
+         }
+         this.§_-729§ = new Vector.<DisplayObject>(0);
+      }
+      
+      private static function §_-H2s§(param1:Vector.<DisplayObject>, param2:Function, param3:int, param4:int, param5:Vector.<DisplayObject>) : void
+      {
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
+         if(param4 <= 1)
+         {
+            return;
+         }
+         _loc6_ = 0;
+         _loc7_ = param3 + param4;
+         _loc8_ = param4 / 2;
+         _loc9_ = param3;
+         _loc10_ = param3 + _loc8_;
+         §_-H2s§(param1,param2,param3,_loc8_,param5);
+         §_-H2s§(param1,param2,param3 + _loc8_,param4 - _loc8_,param5);
+         _loc6_ = 0;
+         while(_loc6_ < param4)
+         {
+            if(_loc9_ < param3 + _loc8_ && (_loc10_ == _loc7_ || param2(param1[_loc9_],param1[_loc10_]) <= 0))
+            {
+               param5[_loc6_] = param1[_loc9_];
+               _loc9_++;
+            }
+            else
+            {
+               param5[_loc6_] = param1[_loc10_];
+               _loc10_++;
+            }
+            _loc6_++;
+         }
+         _loc6_ = param3;
+         while(_loc6_ < _loc7_)
+         {
+            param1[_loc6_] = param5[int(_loc6_ - param3)];
+            _loc6_++;
+         }
+      }
+      
+      override public function dispose() : void
+      {
+         var _loc1_:* = int(this.§_-729§.length - 1);
+         while(_loc1_ >= 0)
+         {
+            this.§_-729§[_loc1_].dispose();
+            _loc1_--;
+         }
+         super.dispose();
+      }
+      
+      public function addChild(param1:DisplayObject) : DisplayObject
+      {
+         return this.addChildAt(param1,this.§_-729§.length);
+      }
+      
+      public function addChildAt(param1:DisplayObject, param2:int) : DisplayObject
+      {
+         var _loc4_:DisplayObjectContainer = null;
+         var _loc3_:int = int(this.§_-729§.length);
+         if(param2 >= 0 && param2 <= _loc3_)
+         {
+            if(param1.parent == this)
+            {
+               this.setChildIndex(param1,param2);
+            }
+            else
+            {
+               param1.removeFromParent();
+               if(param2 == _loc3_)
+               {
+                  this.§_-729§[_loc3_] = param1;
+               }
+               else
+               {
+                  this.§_-d1B§(param2,0,param1);
+               }
+               param1.§_-31J§(this);
+               param1.§_-12v§(Event.ADDED,true);
+               if(stage)
+               {
+                  _loc4_ = param1 as DisplayObjectContainer;
+                  if(_loc4_)
+                  {
+                     _loc4_.§_-NH§(Event.ADDED_TO_STAGE);
+                  }
+                  else
+                  {
+                     param1.§_-12v§(Event.ADDED_TO_STAGE);
+                  }
+               }
+            }
+            return param1;
+         }
+         throw new RangeError("Invalid child index");
+      }
+      
+      public function removeChild(param1:DisplayObject, param2:Boolean = false) : DisplayObject
+      {
+         var _loc3_:int = this.getChildIndex(param1);
+         if(_loc3_ != -1)
+         {
+            this.removeChildAt(_loc3_,param2);
+         }
+         return param1;
+      }
+      
+      public function removeChildAt(param1:int, param2:Boolean = false) : DisplayObject
+      {
+         var _loc3_:DisplayObject = null;
+         var _loc4_:DisplayObjectContainer = null;
+         if(param1 >= 0 && param1 < this.§_-729§.length)
+         {
+            _loc3_ = this.§_-729§[param1];
+            _loc3_.§_-12v§(Event.REMOVED,true);
+            if(stage)
+            {
+               _loc4_ = _loc3_ as DisplayObjectContainer;
+               if(_loc4_)
+               {
+                  _loc4_.§_-NH§(Event.REMOVED_FROM_STAGE);
+               }
+               else
+               {
+                  _loc3_.§_-12v§(Event.REMOVED_FROM_STAGE);
+               }
+            }
+            _loc3_.§_-31J§(null);
+            param1 = this.§_-729§.indexOf(_loc3_);
+            if(param1 >= 0)
+            {
+               this.§_-d1B§(param1,1);
+            }
+            if(param2)
+            {
+               _loc3_.dispose();
+            }
+            return _loc3_;
+         }
+         throw new RangeError("Invalid child index");
+      }
+      
+      public function removeChildren(param1:int = 0, param2:int = -1, param3:Boolean = false) : void
+      {
+         if(param2 < 0 || param2 >= this.numChildren)
+         {
+            param2 = this.numChildren - 1;
+         }
+         var _loc4_:int = param1;
+         while(_loc4_ <= param2)
+         {
+            this.removeChildAt(param1,param3);
+            _loc4_++;
+         }
+      }
+      
+      public function getChildAt(param1:int) : DisplayObject
+      {
+         var _loc2_:int = int(this.§_-729§.length);
+         if(param1 < 0)
+         {
+            param1 = _loc2_ + param1;
+         }
+         if(param1 >= 0 && param1 < _loc2_)
+         {
+            return this.§_-729§[param1];
+         }
+         throw new RangeError("Invalid child index");
+      }
+      
+      public function getChildByName(param1:String) : DisplayObject
+      {
+         var _loc2_:int = int(this.§_-729§.length);
+         var _loc3_:int = 0;
+         while(_loc3_ < _loc2_)
+         {
+            if(this.§_-729§[_loc3_].name == param1)
+            {
+               return this.§_-729§[_loc3_];
+            }
+            _loc3_++;
+         }
+         return null;
+      }
+      
+      public function getChildIndex(param1:DisplayObject) : int
+      {
+         return this.§_-729§.indexOf(param1);
+      }
+      
+      public function setChildIndex(param1:DisplayObject, param2:int) : void
+      {
+         var _loc3_:int = this.getChildIndex(param1);
+         if(_loc3_ == param2)
+         {
+            return;
+         }
+         if(_loc3_ == -1)
+         {
+            throw new ArgumentError("Not a child of this container");
+         }
+         this.§_-d1B§(_loc3_,1);
+         this.§_-d1B§(param2,0,param1);
+      }
+      
+      public function swapChildren(param1:DisplayObject, param2:DisplayObject) : void
+      {
+         var _loc3_:int = this.getChildIndex(param1);
+         var _loc4_:int = this.getChildIndex(param2);
+         if(_loc3_ == -1 || _loc4_ == -1)
+         {
+            throw new ArgumentError("Not a child of this container");
+         }
+         this.§_-h22§(_loc3_,_loc4_);
+      }
+      
+      public function §_-h22§(param1:int, param2:int) : void
+      {
+         var _loc3_:DisplayObject = this.getChildAt(param1);
+         var _loc4_:DisplayObject = this.getChildAt(param2);
+         this.§_-729§[param1] = _loc4_;
+         this.§_-729§[param2] = _loc3_;
+      }
+      
+      public function §_-S1R§(param1:Function) : void
+      {
+         §_-828§.length = this.§_-729§.length;
+         §_-H2s§(this.§_-729§,param1,0,this.§_-729§.length,§_-828§);
+         §_-828§.length = 0;
+      }
+      
+      public function contains(param1:DisplayObject) : Boolean
+      {
+         while(param1)
+         {
+            if(param1 == this)
+            {
+               return true;
+            }
+            param1 = param1.parent;
+         }
+         return false;
+      }
+      
+      override public function getBounds(param1:DisplayObject, param2:Rectangle = null) : Rectangle
+      {
+         var _loc4_:Number = NaN;
+         var _loc5_:Number = NaN;
+         var _loc6_:Number = NaN;
+         var _loc7_:Number = NaN;
+         var _loc8_:int = 0;
+         if(param2 == null)
+         {
+            param2 = new Rectangle();
+         }
+         var _loc3_:int = int(this.§_-729§.length);
+         if(_loc3_ == 0)
+         {
+            §_-R1D§(param1,§_-7w§);
+            §_-r1p§.§_-317§(§_-7w§,0,0,§_-O§);
+            param2.setTo(§_-O§.x,§_-O§.y,0,0);
+         }
+         else if(_loc3_ == 1)
+         {
+            this.§_-729§[0].getBounds(param1,param2);
+         }
+         else
+         {
+            _loc4_ = Number.MAX_VALUE;
+            _loc5_ = -Number.MAX_VALUE;
+            _loc6_ = Number.MAX_VALUE;
+            _loc7_ = -Number.MAX_VALUE;
+            _loc8_ = 0;
+            while(_loc8_ < _loc3_)
+            {
+               this.§_-729§[_loc8_].getBounds(param1,param2);
+               if(_loc4_ > param2.x)
+               {
+                  _loc4_ = param2.x;
+               }
+               if(_loc5_ < param2.right)
+               {
+                  _loc5_ = param2.right;
+               }
+               if(_loc6_ > param2.y)
+               {
+                  _loc6_ = param2.y;
+               }
+               if(_loc7_ < param2.bottom)
+               {
+                  _loc7_ = param2.bottom;
+               }
+               _loc8_++;
+            }
+            param2.setTo(_loc4_,_loc6_,_loc5_ - _loc4_,_loc7_ - _loc6_);
+         }
+         return param2;
+      }
+      
+      override public function hitTest(param1:Point, param2:Boolean = false) : DisplayObject
+      {
+         var _loc8_:DisplayObject = null;
+         if(param2 && (!visible || !touchable))
+         {
+            return null;
+         }
+         if(!§_-Dz§(param1))
+         {
+            return null;
+         }
+         var _loc3_:DisplayObject = null;
+         var _loc4_:Number = param1.x;
+         var _loc5_:Number = param1.y;
+         var _loc6_:int = int(this.§_-729§.length);
+         var _loc7_:* = int(_loc6_ - 1);
+         while(_loc7_ >= 0)
+         {
+            _loc8_ = this.§_-729§[_loc7_];
+            if(!_loc8_.§_-p2S§)
+            {
+               §_-7w§.copyFrom(_loc8_.transformationMatrix);
+               §_-7w§.invert();
+               §_-r1p§.§_-317§(§_-7w§,_loc4_,_loc5_,§_-O§);
+               _loc3_ = _loc8_.hitTest(§_-O§,param2);
+               if(_loc3_)
+               {
+                  return param2 && this.§_-69§ ? this : _loc3_;
+               }
+            }
+            _loc7_--;
+         }
+         return null;
+      }
+      
+      override public function render(param1:§_-wz§, param2:Number) : void
+      {
+         var _loc7_:DisplayObject = null;
+         var _loc8_:FragmentFilter = null;
+         var _loc9_:DisplayObject = null;
+         var _loc3_:Number = param2 * this.alpha;
+         var _loc4_:int = int(this.§_-729§.length);
+         var _loc5_:String = param1.blendMode;
+         var _loc6_:int = 0;
+         while(_loc6_ < _loc4_)
+         {
+            _loc7_ = this.§_-729§[_loc6_];
+            if(_loc7_.§_-L1e§)
+            {
+               _loc8_ = _loc7_.filter;
+               _loc9_ = _loc7_.mask;
+               param1.§_-V1d§();
+               param1.§_-71k§(_loc7_);
+               param1.blendMode = _loc7_.blendMode;
+               if(_loc9_)
+               {
+                  param1.§_-J2n§(_loc9_);
+               }
+               if(_loc8_)
+               {
+                  _loc8_.render(_loc7_,param1,_loc3_);
+               }
+               else
+               {
+                  _loc7_.render(param1,_loc3_);
+               }
+               if(_loc9_)
+               {
+                  param1.§_-UQ§();
+               }
+               param1.blendMode = _loc5_;
+               param1.§_-c2N§();
+            }
+            _loc6_++;
+         }
+      }
+      
+      public function §_-EE§(param1:Event) : void
+      {
+         if(param1.bubbles)
+         {
+            throw new ArgumentError("Broadcast of bubbling events is prohibited");
+         }
+         var _loc2_:int = int(§_-ol§.length);
+         this.§_-x24§(this,param1.type,§_-ol§);
+         var _loc3_:int = int(§_-ol§.length);
+         var _loc4_:int = _loc2_;
+         while(_loc4_ < _loc3_)
+         {
+            §_-ol§[_loc4_].dispatchEvent(param1);
+            _loc4_++;
+         }
+         §_-ol§.length = _loc2_;
+      }
+      
+      public function §_-NH§(param1:String, param2:Object = null) : void
+      {
+         var _loc3_:Event = Event.§_-11t§(param1,false,param2);
+         this.§_-EE§(_loc3_);
+         Event.§_-b3§(_loc3_);
+      }
+      
+      public function get numChildren() : int
+      {
+         return this.§_-729§.length;
+      }
+      
+      public function get §_-03v§() : Boolean
+      {
+         return this.§_-69§;
+      }
+      
+      public function set §_-03v§(param1:Boolean) : void
+      {
+         this.§_-69§ = param1;
+      }
+      
+      private function §_-d1B§(param1:int, param2:uint = 4294967295, param3:DisplayObject = null) : void
+      {
+         var _loc6_:int = 0;
+         var _loc4_:Vector.<DisplayObject> = this.§_-729§;
+         var _loc5_:uint = _loc4_.length;
+         if(param1 < 0)
+         {
+            param1 += _loc5_;
+         }
+         if(param1 < 0)
+         {
+            param1 = 0;
+         }
+         else if(param1 > _loc5_)
+         {
+            param1 = int(_loc5_);
+         }
+         if(param1 + param2 > _loc5_)
+         {
+            param2 = _loc5_ - param1;
+         }
+         var _loc7_:int = param3 ? 1 : 0;
+         var _loc8_:int = _loc7_ - param2;
+         var _loc9_:uint = _loc5_ + _loc8_;
+         var _loc10_:* = int(_loc5_ - param1 - param2);
+         if(_loc8_ < 0)
+         {
+            _loc6_ = param1 + _loc7_;
+            while(_loc10_)
+            {
+               _loc4_[_loc6_] = _loc4_[int(_loc6_ - _loc8_)];
+               _loc10_--;
+               _loc6_++;
+            }
+            _loc4_.length = _loc9_;
+         }
+         else if(_loc8_ > 0)
+         {
+            _loc6_ = 1;
+            while(_loc10_)
+            {
+               _loc4_[int(_loc9_ - _loc6_)] = _loc4_[int(_loc5_ - _loc6_)];
+               _loc10_--;
+               _loc6_++;
+            }
+            _loc4_.length = _loc9_;
+         }
+         if(param3)
+         {
+            _loc4_[param1] = param3;
+         }
+      }
+      
+      internal function §_-x24§(param1:DisplayObject, param2:String, param3:Vector.<DisplayObject>) : void
+      {
+         var _loc5_:Vector.<DisplayObject> = null;
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
+         var _loc4_:DisplayObjectContainer = param1 as DisplayObjectContainer;
+         if(param1.hasEventListener(param2))
+         {
+            param3[param3.length] = param1;
+         }
+         if(_loc4_)
+         {
+            _loc5_ = _loc4_.§_-729§;
+            _loc6_ = int(_loc5_.length);
+            _loc7_ = 0;
+            while(_loc7_ < _loc6_)
+            {
+               this.§_-x24§(_loc5_[_loc7_],param2,param3);
+               _loc7_++;
+            }
+         }
+      }
+   }
+}
+
