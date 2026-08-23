@@ -1,0 +1,24 @@
+package
+{
+   import flash.text.Font;
+   
+   [Embed(source="/_assets/57_FontRoboto_FontRoboto_Roboto.ttf",
+   fontName="Roboto",
+   fontFamily="Roboto",
+   mimeType="application/x-font",
+   fontWeight="normal",
+   fontStyle="normal",
+   unicodeRange="U+0002,U+000D,U+0020-007E,U+00A0-017F,U+018F-018F,U+0192-0192,U+01A0-01A1,U+01AF-01B0,U+01F0-01F0,U+01FA-01FF,U+0218-021B,U+0237-0237,U+02C6-02C7,U+02C9-02C9,U+02D8-02DD,U+0384-038A,U+038C-038C,U+038E-03A1,U+03A3-03CE,U+03D1-03D2,U+03D6-03D6,U+0400-0486,U+0488-04CE,U+1E00-1E01,U+1E3E-1E3F,U+1E80-1E85,U+1E9E-1E9E,U+1EA0-1EF9,U+1F4D-1F4D,U+2000-200B,U+2010-2011,U+2013-2015,U+2017-201E,U+2020-2022,U+2025-2027,U+2030-2030,U+2032-2033,U+2039-203A,U+203C-203C,U+2044-2044,U+2074-2074,U+207F-207F,U+2081-2084,U+20A3-20A4,U+20A6-20AC,U+20B1-20B1,U+20B9-20BA,U+20BC-20BD,U+20C1-20C1,U+2105-2105,U+2113-2113,U+2116-2116,U+2122-2122,U+2126-2126,U+212E-212E,U+215B-215E,U+2202-2202,U+220F-220F,U+2211-2211,U+221A-221A,U+221E-221E,U+222B-222B,U+2260-2260,U+2264-2265,U+25A0-25A0,U+25CB-25CB,U+25CF-25CF,U+FEFF-FEFF,U+FFFC-FFFC",
+   advancedAntiAliasing="true",
+   embedAsCFF="false"
+   )]
+   public dynamic class FontRoboto extends Font
+   {
+      
+      public function FontRoboto()
+      {
+         super();
+      }
+   }
+}
+
