@@ -1,0 +1,4 @@
+# Впиши сюда публичный HTTPS-адрес manifest.json на своём сервере.
+# Например:
+# https://example.com/rfn-mod/manifest.json
+https://rfn.bakh.us/manifest.json
